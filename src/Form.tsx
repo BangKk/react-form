@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useRef, useEffect } from "react";
 import { FormContext } from "./context";
 
 interface Values {
@@ -22,7 +22,13 @@ interface FormCore extends FormOptions {
   reset: () => void;
 }
 
-const Form = ({ form, onSubmit: submit, onReset: reset, children }) => {
+const Form = ({
+  form,
+  onSubmit: submit,
+  onReset: reset,
+  onChange: change,
+  children
+}) => {
   const onSubmit = (e) => {
     e.preventDefault();
     submit(form.values);
@@ -31,10 +37,16 @@ const Form = ({ form, onSubmit: submit, onReset: reset, children }) => {
     form.reset();
     reset();
   };
+  const formRef = useRef();
+  useEffect(() => {
+    formRef.current.addEventListener("form-change", (e) => {
+      change(e.detail.change);
+    });
+  }, []);
   // form 由 createForm 创建，作为 context 的接收值
   return (
     <FormContext.Provider value={form}>
-      <form onSubmit={onSubmit} onReset={onReset}>
+      <form ref={formRef} onSubmit={onSubmit} onReset={onReset}>
         {children}
       </form>
     </FormContext.Provider>
@@ -42,13 +54,12 @@ const Form = ({ form, onSubmit: submit, onReset: reset, children }) => {
 };
 
 const createForm = (options: FormOptions): FormCore => {
-  let { values, rules, onChange } = options;
+  let { values, rules } = options;
   const form = {
     values,
     rules,
     onChange(key, value) {
       values[key] = value;
-      onChange(key, value, values);
     },
     reset() {
       form.values = {};
@@ -60,7 +71,19 @@ const createForm = (options: FormOptions): FormCore => {
 const Field = ({ name, children }) => {
   const { values, onChange } = useContext(FormContext);
   const onFieldValueChange = (e) => {
-    onChange(name, e.target.value);
+    const { value } = e.target;
+    onChange(name, value);
+    e.target.dispatchEvent(
+      new CustomEvent("form-change", {
+        bubbles: true,
+        detail: {
+          change: {
+            name,
+            value
+          }
+        }
+      })
+    );
   };
 
   const child = React.cloneElement(children, {
