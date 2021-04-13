@@ -6,26 +6,25 @@ export default function App() {
     values: {},
     rules: {
       username: [(val) => val]
+    },
+    // 符合直觉的方式是将 onChange 作为 Form 组件的 props
+    // 但是这里没有办法做到，因为 form 没有 change 事件
+    // 并且 Form、Field、context 无法形成 onChange 在 Form props 上的闭环
+    onChange: (...arg) => {
+      console.log("change", ...arg);
     }
   });
 
   const onSubmit = () => {
-    console.log("onSubmit");
-    console.log(form.values);
+    console.log("onSubmit", form.values);
   };
 
   const onReset = () => {
-    console.log("reset");
-    console.log(form.values);
-  };
-
-  const onChange = (...arg) => {
-    console.log("change");
-    console.log(...arg);
+    console.log("reset", form.values);
   };
 
   return (
-    <Form form={form} onSubmit={onSubmit} onReset={onReset} onChange={onChange}>
+    <Form form={form} onSubmit={onSubmit} onReset={onReset}>
       <Form.Field name="username">
         <input />
       </Form.Field>

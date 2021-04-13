@@ -15,20 +15,14 @@ interface FormOptions {
   rules?: {
     [key: string]: Rule[];
   };
+  onChange: (key: string, val: string) => void;
 }
 
 interface FormCore extends FormOptions {
-  onChange: (key: string, value: string) => void;
   reset: () => void;
 }
 
-const Form = ({
-  form,
-  onSubmit: submit,
-  onReset: reset,
-  onChange: change,
-  children
-}) => {
+const Form = ({ form, onSubmit: submit, onReset: reset, children }) => {
   const onSubmit = (e) => {
     e.preventDefault();
     submit(form.values);
@@ -36,9 +30,6 @@ const Form = ({
   const onReset = (e) => {
     form.reset();
     reset();
-  };
-  const onChange = (name, e) => {
-    form.onChange(name, e.target.value);
   };
   // form 由 createForm 创建，作为 context 的接收值
   return (
