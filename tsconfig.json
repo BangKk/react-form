@@ -10,5 +10,14 @@
             "es2015"
         ],
         "jsx": "react-jsx"
+    },
+    "rules": {
+        "no-unused-expressions": [
+            "off",
+            {
+                "allowShortCircuit": true,
+                "allowTernary": true
+            }
+        ]
     }
 }

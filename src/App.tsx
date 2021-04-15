@@ -1,9 +1,12 @@
 import "./styles.css";
-import Form from "./Form";
+import Form, { useForm, ChangeInfo } from "./Form";
 
 export default function App() {
-  const form = Form.create({
-    values: {},
+  const form = useForm({
+    values: {
+      username: "",
+      password: ""
+    },
     rules: {
       username: [(val) => val]
     }
@@ -17,8 +20,8 @@ export default function App() {
     console.log("reset", form.values);
   };
 
-  const onChange = (changeInfo) => {
-    console.log("change", changeInfo, form.values);
+  const onChange = (changeInfo: ChangeInfo) => {
+    // console.log("change", changeInfo, form.values);
   };
 
   return (
